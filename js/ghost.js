@@ -2,6 +2,7 @@
 
 const GHOST = '👻'
 var gGhosts
+var gDeadGhosts
 
 var gIntervalGhosts
 
@@ -12,10 +13,13 @@ function createGhost(board) {
             i: 3,
             j: 3
         },
-        currCellContent: FOOD
+        currCellContent: FOOD,
+        color: getRandomColor()
     }
+    // console.log('ghost.color:', ghost.color)
     gGhosts.push(ghost)
     board[ghost.location.i][ghost.location.j] = GHOST
+    // document.querySelector('.cell-3-3').classList.add('ghosted')
 }
 
 function createGhosts(board) {
@@ -34,11 +38,11 @@ function moveGhosts() {
     // loop through ghosts
     for (var i = 0; i < gGhosts.length; i++) {
         var ghost = gGhosts[i]
-        moveGhost(ghost)
+        moveGhost(ghost, i)
     }
 }
 
-function moveGhost(ghost) {
+function moveGhost(ghost, ghostIdx) {
     // console.log('ghost.location:', ghost.location)
     const moveDiff = getMoveDiff()
     // console.log('moveDiff:', moveDiff)
@@ -56,6 +60,12 @@ function moveGhost(ghost) {
     if (nextCell === GHOST) return
     // hitting a pacman? call gameOver
     if (nextCell === PACMAN) {
+        if (isSuper) {
+            killGhost(ghostIdx)
+            return
+        }
+        var deadAudio = new Audio('sounds/dead.mp3')
+        deadAudio.play()
         gameOver()
         return
     }
@@ -73,7 +83,7 @@ function moveGhost(ghost) {
     gBoard[ghost.location.i][ghost.location.j] = GHOST
 
     // update the DOM
-    renderCell(ghost.location, getGhostHTML(ghost))
+    renderCell(ghost.location, getGhostHTML(ghost, isSuper))
 }
 
 function getMoveDiff() {
@@ -87,6 +97,19 @@ function getMoveDiff() {
     }
 }
 
-function getGhostHTML(ghost) {
-    return `<span>${GHOST}</span>`
+function getGhostHTML(ghost, isSuper) {
+    var color = (isSuper) ? 'blue' : ghost.color
+    return `<span style="color: transparent;text-shadow: 0 0 0 ${color};">${GHOST}</span>`
 }
+
+function killGhost(ghostIdx) {
+    console.log('hi')
+    // drop the food 
+    gBoard[gGhosts[ghostIdx].location.i][gGhosts[ghostIdx].location.j] = gGhosts[ghostIdx].currCellContent
+    renderCell(gGhosts[ghostIdx].location, gGhosts[ghostIdx].currCellContent)
+    // put in dead ghosts array
+    gDeadGhosts.push(...gGhosts.splice(ghostIdx, 1))
+    // console.log('gGhosts:', gGhosts)
+    // console.log('gDeadGhosts:', gDeadGhosts)
+}
+
