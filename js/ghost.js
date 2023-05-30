@@ -16,10 +16,8 @@ function createGhost(board) {
         currCellContent: FOOD,
         color: getRandomColor()
     }
-    // console.log('ghost.color:', ghost.color)
     gGhosts.push(ghost)
     board[ghost.location.i][ghost.location.j] = GHOST
-    // document.querySelector('.cell-3-3').classList.add('ghosted')
 }
 
 function createGhosts(board) {
@@ -29,10 +27,9 @@ function createGhosts(board) {
     for (var i = 0; i < 3; i++) {
         createGhost(board)
     }
-    // console.log('gGhosts:', gGhosts)
 
     gIntervalGhosts = setInterval(moveGhosts, 1000)
-   
+
 }
 
 function moveGhosts() {
@@ -63,11 +60,7 @@ function moveGhost(ghost, ghostIdx) {
     if (nextCell === GHOST) return
     // hitting a pacman? call gameOver
     if (nextCell === PACMAN) {
-        if (isSuper) {
-            killGhost(ghostIdx)
-            return
-        }
-        
+        if (isSuper) return
         deadAudio.play()
         gameOver()
         return
@@ -106,14 +99,23 @@ function getGhostHTML(ghost, isSuper) {
 }
 
 function killGhost(ghostIdx) {
-    // console.log('hi')
-    // drop the food 
-    console.log('gGhosts[ghostIdx]:', gGhosts[ghostIdx])
-    gBoard[gGhosts[ghostIdx].location.i][gGhosts[ghostIdx].location.j] = gGhosts[ghostIdx].currCellContent
-    renderCell(gGhosts[ghostIdx].location, gGhosts[ghostIdx].currCellContent)
+    // eat ghost content
+    checkGhostFood(ghostIdx)
+    gGhosts[ghostIdx].currCellContent = EMPTY
     // put in dead ghosts array
     gDeadGhosts.push(...gGhosts.splice(ghostIdx, 1))
-    // console.log('gGhosts:', gGhosts)
-    // console.log('gDeadGhosts:', gDeadGhosts)
 }
 
+function checkGhostFood(ghostIdx) {
+    if (gGhosts[ghostIdx].currCellContent === FOOD) {
+        foodAudio.play()
+        gFoodCollected++
+        updateScore(1)
+    }
+
+}
+ function renderGhosts(){
+    for (var i = 0; i < gGhosts.length; i++) {
+        renderCell(gGhosts[i].location,getGhostHTML(gGhosts[i],isSuper))
+    }
+ }

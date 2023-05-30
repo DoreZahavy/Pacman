@@ -32,21 +32,13 @@ function onMovePacman(ev) {
     if (nextCell === GHOST) {
         if (isSuper) {
             for (var i = 0; i < gGhosts.length; i++) {
-                // if (gGhosts[i].location === nextLocation) {
                 if (gGhosts[i].location.i === nextLocation.i &&
                     gGhosts[i].location.j === nextLocation.j) {
-                    if (gGhosts[i].currCellContent === FOOD) {
-                        console.log('gGhosts[i]:', gGhosts[i])
-                    gFoodCollected++
-                    updateScore(1)
-                    gGhosts[i].currCellContent = EMPTY
-                    }
                     killGhost(i)
                     break
                 }
             }
         } else {
-            // var deadAudio = new Audio('sounds/dead.mp3')
             deadAudio.play()
             gameOver()
             return
@@ -58,19 +50,17 @@ function onMovePacman(ev) {
         if (isSuper) return
         superFoodAudio.play()
         isSuper = true
+        renderGhosts()
         setTimeout(endSuperMode, 5000)
         gFoodCollected++
         updateScore(3)
-    }
-    if (nextCell === FOOD) {
+    } else if (nextCell === FOOD) {
         foodAudio.play()
         gFoodCollected++
         updateScore(1)
-    }
-    if (nextCell === CHERRY) {
+    } else if (nextCell === CHERRY) {
 
         cherryAudio.play()
-        // gFoodCollected++
         updateScore(10)
     }
 
@@ -86,8 +76,6 @@ function onMovePacman(ev) {
     gBoard[gPacman.location.i][gPacman.location.j] = PACMAN
     // update the DOM
     var pacmanHTML = `<img src="img/${gPacman.direction}.png">`
-    // console.log('pacmanHTML:', pacmanHTML)
-    // var pacmanHTML = `<span style="rotate: 90deg;">${PACMAN}</span>`
     renderCell(gPacman.location, pacmanHTML) //PACMAN
 }
 
@@ -96,7 +84,6 @@ function getNextLocation(eventKeyboard) {
         i: gPacman.location.i,
         j: gPacman.location.j
     }
-    // console.log('eventKeyboard.code:', eventKeyboard.code)
 
     switch (eventKeyboard.code) {
         case 'ArrowUp':

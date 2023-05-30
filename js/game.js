@@ -1,8 +1,6 @@
 'use strict'
 
 
-// stop super music when win
-// clearinterval on gohsts when they hit me sometimes not work
 
 
 const WALL = '🔥'
@@ -15,6 +13,7 @@ var deadAudio = new Audio('sounds/dead.mp3')
 var superFoodAudio = new Audio('sounds/super-food.mp3')
 var foodAudio = new Audio('sounds/food-collected.mp3')
 var cherryAudio = new Audio('sounds/cherry.mp3')
+var winAudio = new Audio('sounds/win.mp3')
 
 var gFoodOnBoard
 var gFoodCollected
@@ -34,7 +33,7 @@ function onInit() {
     console.log('hello')
 
     gFoodCollected = 0
-    gIntervalCherry = setInterval(createCherry,15000)
+    gIntervalCherry = setInterval(createCherry, 15000)
 
     gDeadGhosts = []
 
@@ -64,8 +63,8 @@ function buildBoard() {
 
             if (i === 0 || i === size - 1 ||
                 j === 0 || j === size - 1 ||
-                (j === 3 && i > 4 && i < size - 2)||
-                (j === 7 && i > 1 && i < 6)||
+                (j === 3 && i > 4 && i < size - 2) ||
+                (j === 7 && i > 1 && i < 6) ||
                 (i === 2 && j > 1 && j < 4)) {
                 board[i][j] = WALL
             } else {
@@ -76,7 +75,6 @@ function buildBoard() {
     }
     board[1][1] = board[8][1] = board[8][8] = board[1][8] = SUPER_FOOD
     console.log('board:', board)
-    console.log('gFoodOnBoard:', gFoodOnBoard)
     return board
 }
 
@@ -108,17 +106,17 @@ function renderCell(location, value) {
 function updateScore(diff) {
     // update model and dom
     gGame.score += diff
-    document.querySelector('h2 span').innerText = gGame.score +' '+gFoodCollected + ' '+ gFoodOnBoard
-    if (gFoodCollected === gFoodOnBoard){
-        // superFoodAudio.stop()
-        var winAudio = new Audio('sounds/win.mp3')
+    document.querySelector('h2 span').innerText = gGame.score + ' ' + gFoodCollected + ' ' + gFoodOnBoard
+    if (gFoodCollected === gFoodOnBoard) {
+        
         winAudio.play()
         gameOver()
-    } 
+    }
 }
 
 function gameOver() {
     console.log('Game Over')
+    superFoodAudio.pause()
     gGame.isOn = false
     clearInterval(gIntervalGhosts)
     clearInterval(gIntervalCherry)
@@ -131,18 +129,19 @@ function gameOver() {
 
 }
 
-function endSuperMode(){
-// revive ghosts
-for (var i = 0; i < gDeadGhosts.length; i++) {
-    gGhosts.push(...gDeadGhosts)
-    gDeadGhosts=[]
-}
-// color ghosts back
-isSuper = false
-// 
+function endSuperMode() {
+    // revive ghosts
+    for (var i = 0; i < gDeadGhosts.length; i++) {
+        gGhosts.push(...gDeadGhosts)
+        gDeadGhosts = []
+    }
+    // color ghosts back
+    isSuper = false
+    renderGhosts()
+    // 
 }
 
-function createCherry(){
+function createCherry() {
     var newCherryPos = findEmptyPos()
     gBoard[newCherryPos.i][newCherryPos.j] = CHERRY
     renderCell(newCherryPos, CHERRY)
