@@ -1,18 +1,25 @@
 'use strict'
 
+
+// stop super music when win
+// clearinterval on gohsts when they hit me sometimes not work
+
+
 const WALL = '🔥'
 const FOOD = '•'
 const EMPTY = ' '
 const SUPER_FOOD = '🥑'
 const CHERRY = '🍒'
 
-// var ballAudio = new Audio('ball-collected.mp3');
-// 			ballAudio.play();
+var deadAudio = new Audio('sounds/dead.mp3')
+var superFoodAudio = new Audio('sounds/super-food.mp3')
+var foodAudio = new Audio('sounds/food-collected.mp3')
+var cherryAudio = new Audio('sounds/cherry.mp3')
 
 var gFoodOnBoard
 var gFoodCollected
 
-var gCherryInterval
+var gIntervalCherry
 
 var isSuper
 
@@ -27,7 +34,7 @@ function onInit() {
     console.log('hello')
 
     gFoodCollected = 0
-    gCherryInterval = setInterval(createCherry,15000)
+    gIntervalCherry = setInterval(createCherry,15000)
 
     gDeadGhosts = []
 
@@ -69,6 +76,7 @@ function buildBoard() {
     }
     board[1][1] = board[8][1] = board[8][8] = board[1][8] = SUPER_FOOD
     console.log('board:', board)
+    console.log('gFoodOnBoard:', gFoodOnBoard)
     return board
 }
 
@@ -100,8 +108,9 @@ function renderCell(location, value) {
 function updateScore(diff) {
     // update model and dom
     gGame.score += diff
-    document.querySelector('h2 span').innerText = gGame.score
+    document.querySelector('h2 span').innerText = gGame.score +' '+gFoodCollected + ' '+ gFoodOnBoard
     if (gFoodCollected === gFoodOnBoard){
+        // superFoodAudio.stop()
         var winAudio = new Audio('sounds/win.mp3')
         winAudio.play()
         gameOver()
@@ -112,6 +121,7 @@ function gameOver() {
     console.log('Game Over')
     gGame.isOn = false
     clearInterval(gIntervalGhosts)
+    clearInterval(gIntervalCherry)
     renderCell(gPacman.location, EMPTY)
     var elModal = document.querySelector('.modal')
     var elH2 = elModal.querySelector('h2')

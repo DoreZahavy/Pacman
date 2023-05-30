@@ -32,6 +32,7 @@ function createGhosts(board) {
     // console.log('gGhosts:', gGhosts)
 
     gIntervalGhosts = setInterval(moveGhosts, 1000)
+   
 }
 
 function moveGhosts() {
@@ -57,6 +58,8 @@ function moveGhost(ghost, ghostIdx) {
 
     // return if cannot move
     if (nextCell === WALL) return
+    if (nextCell === SUPER_FOOD) return
+    if (nextCell === CHERRY) return
     if (nextCell === GHOST) return
     // hitting a pacman? call gameOver
     if (nextCell === PACMAN) {
@@ -64,7 +67,7 @@ function moveGhost(ghost, ghostIdx) {
             killGhost(ghostIdx)
             return
         }
-        var deadAudio = new Audio('sounds/dead.mp3')
+        
         deadAudio.play()
         gameOver()
         return
@@ -103,8 +106,9 @@ function getGhostHTML(ghost, isSuper) {
 }
 
 function killGhost(ghostIdx) {
-    console.log('hi')
+    // console.log('hi')
     // drop the food 
+    console.log('gGhosts[ghostIdx]:', gGhosts[ghostIdx])
     gBoard[gGhosts[ghostIdx].location.i][gGhosts[ghostIdx].location.j] = gGhosts[ghostIdx].currCellContent
     renderCell(gGhosts[ghostIdx].location, gGhosts[ghostIdx].currCellContent)
     // put in dead ghosts array
